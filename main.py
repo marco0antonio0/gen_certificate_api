@@ -54,8 +54,8 @@ MARGEM_TEXTO_ASSINATURA = 80 * ESCALA
 COR_NOME = (164, 120, 58)
 COR_TEXTO = (0, 0, 0)
 
-def gerar_certificado(nome, fundo="modelo_0.png", texto_personalizado=None, orgao_emissor=None, assinatura_b64=None):
-    caminho_fundo = os.path.join(PASTA_FUNDOS, fundo)
+def gerar_certificado(nome, fundo="modelo_0", texto_personalizado=None, orgao_emissor=None, assinatura_b64=None):
+    caminho_fundo = os.path.join(PASTA_FUNDOS, fundo+".png")
     if not os.path.exists(caminho_fundo):
         raise FileNotFoundError(f"Fundo '{fundo}' não encontrado.")
 
@@ -175,7 +175,7 @@ def gerar_certificado_api():
         in: formData
         type: string
         required: false
-        description: "Nome do arquivo de fundo (ex: modelo_0.pgn)"
+        description: "Nome do arquivo de fundo (ex: modelo_0)"
       - name: texto_personalizado
         in: formData
         type: string
@@ -218,7 +218,7 @@ def gerar_certificado_api():
 @app.route("/tipos_certificados", methods=["GET"])
 def listar_fundos():
     """
-    Lista os fundos de certificado disponíveis.
+    Lista os fundos de certificado disponíveis (sem extensão).
     ---
     responses:
       200:
@@ -229,7 +229,7 @@ def listar_fundos():
             type: string
     """
     arquivos = [
-        f for f in os.listdir(PASTA_FUNDOS)
+        os.path.splitext(f)[0] for f in os.listdir(PASTA_FUNDOS)
         if f.lower().endswith((".jpg", ".jpeg", ".png"))
     ]
     return jsonify(arquivos)
