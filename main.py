@@ -6,9 +6,11 @@ import uuid
 import base64
 import io
 import zipfile
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 swagger_template = {
     "swagger": "2.0",
