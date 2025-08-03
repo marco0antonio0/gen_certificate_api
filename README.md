@@ -46,7 +46,7 @@ http://localhost:5000/apidocs/
 
 A documentação da API está disponível em:
 
-🔗 [https://api.certificado.opengena.com](https://api.certificado.opengena.com)
+🔗 [https://api.certificado.opengena.com](https://api.certificado.opengena.com/apidocs/)
 
 ---
 
