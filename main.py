@@ -88,10 +88,11 @@ def gerar_certificado(nome, fundo="modelo_0", texto_personalizado=None, orgao_em
 
     TEXTO_TITULO = "Este certificado atesta que"
     TEXTO_PADRAO = texto_personalizado or (
-        "concluiu com êxito o curso de Administração oferecido por Borcelle, "
-        "no período compreendido entre 02/08/2019 e 07/05/2023..."
+        "Este é um texto de teste, utilizado apenas para fins de demonstração. "
+        "Simula a conclusão de um curso de Administração realizado entre 02/08/2019 e 07/05/2023, "
+        "em uma instituição fictícia, sem validade oficial."
     )
-    ORGAO = orgao_emissor or "Instituto de Formação Borcelle"
+    ORGAO = orgao_emissor or "Instituto de exemplo teste"
 
     def margem_y(pixels=20):
         nonlocal y_cursor
@@ -299,18 +300,38 @@ def gerar_certificados_zip():
     tipo = request.form.get("tipo_certificado", "modelo_1")
     texto = request.form.get("texto_personalizado")
     orgao = request.form.get("orgao_emissor")
-    assinatura = request.form.get("assinatura_b64")
+    assinatura_b64 = request.form.get("assinatura_b64")
 
     nomes = [n.strip() for n in nomes_str.split(",") if n.strip()]
     if not nomes:
         return jsonify({"erro": "Informe ao menos um nome no parâmetro 'nomes'"}), 400
 
+    assinatura_img_bytes = None
+    if assinatura_b64:
+        try:
+            if assinatura_b64.startswith("data:image"):
+                assinatura_base64_clean = assinatura_b64.split(",")[1]
+            else:
+                assinatura_base64_clean = assinatura_b64
+
+            image_data = base64.b64decode(assinatura_base64_clean)
+            imagem_sem_fundo = remove(image_data)
+            assinatura_img_bytes = imagem_sem_fundo  # bytes já processados
+        except Exception as e:
+            return jsonify({"erro": f"Erro ao processar assinatura: {str(e)}"}), 400
+
     zip_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
         for nome in nomes:
             try:
-                certificado = gerar_certificado(nome, tipo, texto, orgao, assinatura)
-                zip_file.writestr(f"certificado_{nome}.png", certificado.read())
+                output = gerar_certificado(
+                    nome,
+                    tipo,
+                    texto,
+                    orgao,
+                    base64.b64encode(assinatura_img_bytes).decode() if assinatura_img_bytes else None
+                )
+                zip_file.writestr(f"certificado_{nome}.png", output.read())
             except Exception as e:
                 return jsonify({"erro": f"Erro ao gerar certificado para '{nome}': {str(e)}"}), 500
 
@@ -321,7 +342,6 @@ def gerar_certificados_zip():
         as_attachment=True,
         download_name="certificados.zip"
     )
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0",debug=False, port=3000)
