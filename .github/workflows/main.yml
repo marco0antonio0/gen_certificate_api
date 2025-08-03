@@ -14,7 +14,7 @@ jobs:
       TYPE_BUILD: t2.medium
       TYPE_INITIAL: t2.micro
       AWS_DEFAULT_REGION: us-east-1
-      DEPLOY_DIR: /home/admin/dev/gen_certificate
+      DEPLOY_DIR: /home/admin/dev/gen_certificate_api
 
     steps:
       - name: Instalar AWS CLI se necessário
