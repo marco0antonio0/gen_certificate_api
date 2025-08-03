@@ -8,7 +8,7 @@ services:
       - "3000"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.certificado_backend.rule=Host(`api.certificado.dirrocha.com`)"
+      - "traefik.http.routers.certificado_backend.rule=Host(`api.certificado.opengena.com`)"
       - "traefik.http.routers.certificado_backend.entrypoints=websecure"
       - "traefik.http.routers.certificado_backend.tls=true"
       - "traefik.http.routers.certificado_backend.tls.certresolver=letsEncrypt"
