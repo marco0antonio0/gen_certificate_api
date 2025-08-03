@@ -7,6 +7,7 @@ import base64
 import io
 import zipfile
 from flask_cors import CORS
+from rembg import remove
 
 
 app = Flask(__name__)
@@ -55,6 +56,20 @@ MARGEM_TEXTO_ASSINATURA = 80 * ESCALA
 
 COR_NOME = (164, 120, 58)
 COR_TEXTO = (0, 0, 0)
+
+
+def remover_fundo(caminho_entrada, caminho_saida):
+    try:
+        with open(caminho_entrada, 'rb') as img_file:
+            imagem_bytes = img_file.read()
+            resultado = remove(imagem_bytes)
+
+        imagem_sem_fundo = Image.open(io.BytesIO(resultado)).convert("RGBA")
+        imagem_sem_fundo.save(caminho_saida)
+        print(f"✅ Fundo removido com sucesso: {caminho_saida}")
+    except Exception as e:
+        print(f"❌ Erro ao remover fundo: {e}")
+
 
 def gerar_certificado(nome, fundo="modelo_0", texto_personalizado=None, orgao_emissor=None, assinatura_b64=None):
     caminho_fundo = os.path.join(PASTA_FUNDOS, fundo+".png")
@@ -130,7 +145,8 @@ def gerar_certificado(nome, fundo="modelo_0", texto_personalizado=None, orgao_em
                 assinatura_base64_clean = assinatura_b64
 
             image_data = base64.b64decode(assinatura_base64_clean)
-            assinatura_img = Image.open(io.BytesIO(image_data)).convert("RGBA")
+            imagem_sem_fundo = remove(image_data)
+            assinatura_img = Image.open(io.BytesIO(imagem_sem_fundo)).convert("RGBA")
         except Exception as e:
             raise ValueError(f"Assinatura inválida: {str(e)}")
 

@@ -2,3 +2,5 @@ Pillow
 flask
 flasgger
 flask-cors
+rembg
+onnxruntime
